@@ -43,8 +43,8 @@ INSTALLED_APPS = [
 
     # Your apps
     'accounts',
+    'scans',
     'patients',
-    'sacns',
     'rest_framework_simplejwt',
     'reports',
 ]
