@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  
+  --color-primary: #2563EB;
+  --color-secondary: #0EA5E9;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-background: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-border-theme: #E2E8F0;
+  --color-text-theme: #1E293B;
+  --color-muted: #64748B;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text-theme);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+.medical-card {
+  @apply bg-surface rounded-xl shadow-sm border border-[var(--color-border-theme)] overflow-hidden transition-all duration-300;
+}
+.medical-card:hover {
+  @apply shadow-md;
+}
+
+.input-field {
+  @apply w-full px-4 py-2 border border-[var(--color-border-theme)] rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all duration-200 bg-white;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex justify-center items-center;
+}
+
+.btn-outline {
+  @apply border border-[var(--color-border-theme)] hover:border-[var(--color-muted)] text-[var(--color-text-theme)] font-medium py-2 px-4 rounded-lg transition-all duration-200 flex justify-center items-center bg-white;
+}

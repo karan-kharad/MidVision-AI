@@ -21,7 +21,7 @@ class Scan(models.Model):
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="scans")
     scan_type = models.CharField(max_length=20, choices=Scan_type)
-    scan_image = models.ImageField(upload_to='scans/')
+    scan_image = models.ImageField(upload_to='scans/%Y/%m/%d/')
     uploaded_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='uploaded_scans')
     status = models.CharField(max_length=20, choices=Status_Choice, default="pending")
 
@@ -32,6 +32,10 @@ class Scan(models.Model):
     ai_severity = models.CharField(max_length=255, blank=True)
     ai_findings = models.JSONField(default=list)
     ai_bbox = models.JSONField(default=list)
+    ai_location = models.CharField(max_length=255, blank=True, null=True)
+    ai_recommendation = models.TextField(blank=True, null=True)
+    ai_fracture_detected = models.BooleanField(default=False)
+    
     annotated_image = models.ImageField(upload_to='annotated_scans/', blank=True)
 
     notes = models.TextField(blank=True)
