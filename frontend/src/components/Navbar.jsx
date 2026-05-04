@@ -14,7 +14,7 @@ const Navbar = () => {
         <header className="bg-white border-b border-[#E2E8F0] px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-10">
             <div>
                 <h2 className="text-xl font-semibold text-gray-800">
-                    Welcome back, {user?.role === 'Doctor' ? 'Dr. ' : ''}{user?.username || 'User'} 👋
+                    Welcome back, {user?.role?.toLowerCase() === 'doctor' ? 'Dr. ' : ''}{user?.username || 'User'} 👋
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">{getCurrentDate()}</p>
             </div>

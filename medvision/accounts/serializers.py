@@ -8,7 +8,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta :
         model = CustomUser
-        fields = ('id','username', 'role', 'hostpital_name', 'phone', 'password', 'password2')
+        fields = ('id','username', 'email', 'role', 'hospital_name', 'phone', 'password', 'password2')
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -24,5 +24,5 @@ class RegisterSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('id', 'role', 'hostpital_name', 'phone')
-        read_only_fields = ('id',)
+        fields = ('id', 'username', 'email', 'role', 'hospital_name', 'phone')
+        read_only_fields = ('id', 'username')

@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Plus, UserPlus, X, Edit, Trash2, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { getPatients } from '../api/patients';
-
-const mockPatients = [
-    { id: 1, name: 'Rahul Sharma', age: 35, gender: 'Male', bg: 'B+', phone: '9876501234', doctor: 'Dr. Desai', scans: 3 },
-    { id: 2, name: 'Ananya Singh', age: 28, gender: 'Female', bg: 'O+', phone: '9876501235', doctor: 'Dr. Sharma', scans: 1 },
-    { id: 3, name: 'Vikram Desai', age: 42, gender: 'Male', bg: 'A-', phone: '9876501236', doctor: 'Dr. Desai', scans: 5 }
-];
+import { getPatients, createPatient, deletePatient } from '../api/patients';
 
 const Patients = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -20,12 +14,10 @@ const Patients = () => {
         const fetchPatients = async () => {
             try {
                 const data = await getPatients();
-                // Map the backend data to match frontend requirements if needed, or just set it
-                // Assuming backend returns an array of patients
-                setPatients(data.length > 0 ? data : mockPatients);
+                setPatients(data);
             } catch (error) {
-                console.warn('Failed to fetch patients, using mock data');
-                setPatients(mockPatients);
+                console.error('Failed to fetch patients', error);
+                toast.error('Failed to load patients from server.');
             } finally {
                 setLoading(false);
             }
@@ -33,25 +25,51 @@ const Patients = () => {
         fetchPatients();
     }, []);
 
-    // Also update filteredPatients to handle potential undefined fields gracefully
     const filteredPatients = patients.filter(p =>
-        (p.name || p.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (p.phone || '').includes(searchTerm)
     );
 
-    const handleSave = (e) => {
+    const handleSave = async (e) => {
         e.preventDefault();
-        setIsModalOpen(false);
-        toast.success('Patient added successfully');
-        // Simulate adding patient to list
-    };
+        const formData = new FormData(e.target);
+        
+        const payload = {
+            full_name: formData.get('full_name'),
+            phone: formData.get('phone'),
+            age: parseInt(formData.get('age'), 10),
+            gender: formData.get('gender'),
+            blood_group: formData.get('blood_group'),
+            address: formData.get('address') || '',
+            medical_history: formData.get('medical_history') || '',
+            current_medicines: formData.get('current_medicines') || '',
+            allergies: formData.get('allergies') || ''
+        };
 
-    const handleDelete = (id) => {
-        if (window.confirm('Are you sure you want to delete this patient?')) {
-            setPatients(patients.filter(p => p.id !== id));
-            toast.success('Patient deleted');
+        try {
+            const newPatient = await createPatient(payload);
+            setPatients([newPatient, ...patients]);
+            setIsModalOpen(false);
+            toast.success('Patient added successfully');
+        } catch (error) {
+            console.error('Failed to create patient', error);
+            toast.error('Failed to add patient. Please check details.');
         }
     };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this patient?')) {
+            try {
+                await deletePatient(id);
+                setPatients(patients.filter(p => p.id !== id));
+                toast.success('Patient deleted');
+            } catch (err) {
+                toast.error('Failed to delete patient');
+            }
+        }
+    };
+
+    if (loading) return <div className="p-8 text-center text-gray-500">Loading patients data...</div>;
 
     return (
         <div className="space-y-6">
@@ -85,7 +103,6 @@ const Patients = () => {
                                 <th className="px-6 py-4 font-medium">Age/Gender</th>
                                 <th className="px-6 py-4 font-medium">Blood Group</th>
                                 <th className="px-6 py-4 font-medium">Phone</th>
-                                <th className="px-6 py-4 font-medium">Doctor</th>
                                 <th className="px-6 py-4 font-medium">Scans</th>
                                 <th className="px-6 py-4 font-medium text-right">Actions</th>
                             </tr>
@@ -94,15 +111,14 @@ const Patients = () => {
                             {filteredPatients.map(patient => (
                                 <tr key={patient.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4 text-gray-600">#{patient.id.toString().padStart(4, '0')}</td>
-                                    <td className="px-6 py-4 font-medium text-gray-900">{patient.name}</td>
-                                    <td className="px-6 py-4 text-gray-600">{patient.age} / {patient.gender.charAt(0)}</td>
+                                    <td className="px-6 py-4 font-medium text-gray-900">{patient.full_name}</td>
+                                    <td className="px-6 py-4 text-gray-600">{patient.age} / {patient.gender}</td>
                                     <td className="px-6 py-4">
-                                        <span className="bg-red-50 text-red-600 px-2 py-1 rounded font-medium text-xs">{patient.bg}</span>
+                                        <span className="bg-red-50 text-red-600 px-2 py-1 rounded font-medium text-xs">{patient.blood_group}</span>
                                     </td>
                                     <td className="px-6 py-4 text-gray-600">{patient.phone}</td>
-                                    <td className="px-6 py-4 text-gray-600">{patient.doctor}</td>
                                     <td className="px-6 py-4">
-                                        <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded-full font-medium text-xs">{patient.scans}</span>
+                                        <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded-full font-medium text-xs">{patient.scan_count || 0}</span>
                                     </td>
                                     <td className="px-6 py-4 text-right space-x-2">
                                         <Link to={`/patients/${patient.id}`} className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
@@ -144,28 +160,28 @@ const Patients = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                                    <input type="text" required className="input-field" placeholder="Patient Name" />
+                                    <input type="text" name="full_name" required className="input-field" placeholder="Patient Name" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
-                                    <input type="tel" required className="input-field" placeholder="Contact number" />
+                                    <input type="tel" name="phone" required className="input-field" placeholder="Contact number" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Age *</label>
-                                    <input type="number" required min="0" max="150" className="input-field" placeholder="Age in years" />
+                                    <input type="number" name="age" required min="0" max="150" className="input-field" placeholder="Age in years" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Gender *</label>
-                                    <select required className="input-field">
+                                    <select name="gender" required className="input-field">
                                         <option value="">Select Gender</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                        <option value="O">Other</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group *</label>
-                                    <select required className="input-field">
+                                    <select name="blood_group" required className="input-field">
                                         <option value="">Select Group</option>
                                         <option value="A+">A+</option>
                                         <option value="A-">A-</option>
@@ -177,25 +193,21 @@ const Patients = () => {
                                         <option value="AB-">AB-</option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                                    <input type="email" className="input-field" placeholder="Email (Optional)" />
-                                </div>
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                    <input type="text" className="input-field" placeholder="Full address" />
+                                    <input type="text" name="address" className="input-field" placeholder="Full address" />
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Medical History</label>
-                                    <textarea className="input-field" rows="2" placeholder="Chronic conditions, past surgeries, etc."></textarea>
+                                    <textarea name="medical_history" className="input-field" rows="2" placeholder="Chronic conditions, past surgeries, etc."></textarea>
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Current Medicines</label>
-                                    <textarea className="input-field" rows="2" placeholder="List of current medications"></textarea>
+                                    <textarea name="current_medicines" className="input-field" rows="2" placeholder="List of current medications"></textarea>
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Allergies</label>
-                                    <textarea className="input-field" rows="2" placeholder="Known drug or food allergies"></textarea>
+                                    <textarea name="allergies" className="input-field" rows="2" placeholder="Known drug or food allergies"></textarea>
                                 </div>
                             </div>
 

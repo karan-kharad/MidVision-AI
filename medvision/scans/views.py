@@ -15,15 +15,15 @@ class ScanUploadView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
-        Patient_id = request.data.get('patient_id')
+        patient_id = request.data.get('patient_id')
         scan_type = request.data.get('scan_type', 'xray')
         image = request.data.get('image')
         notes = request.data.get('notes', '')
 
-        if not Patient_id or not image:
-            return Response({'error : "pantient_id and image are required."'}, status=status.HTTP_400_BAD_REQUEST)
+        if not patient_id or not image:
+            return Response({'error': "patient_id and image are required."}, status=status.HTTP_400_BAD_REQUEST)
         
-        patient = get_object_or_404(Patient, id=Patient_id)
+        patient = get_object_or_404(Patient, id=patient_id)
 
         scan = Scan.objects.create(
             patient= patient,
@@ -118,7 +118,7 @@ class ScanListView(APIView):
 
     def get(self, request):
         user = request.user
-        if user.role == 'doctor':
+        if user.is_doctor:
             scans = Scan.objects.filter(patient__doctor=user)
         else:
             scans = Scan.objects.all()

@@ -14,26 +14,20 @@ export const AuthProvider = ({ children }) => {
         const storedUser = localStorage.getItem('user');
 
         if (token && storedUser) {
-            setUser(JSON.parse(storedUser));
-            setIsAuthenticated(true);
+            try {
+                setUser(JSON.parse(storedUser));
+                setIsAuthenticated(true);
+            } catch (e) {
+                console.error("Failed to parse stored user", e);
+                localStorage.removeItem('user');
+            }
         }
         setLoading(false);
     }, []);
 
     const login = async (username, password) => {
         try {
-            // Use local sample data if API fails to simulate login for testing
-            let data;
-            try {
-                data = await loginCall(username, password);
-            } catch (err) {
-                console.warn('API login failed, using mock data for development', err);
-                data = {
-                    access: 'mock_token_123',
-                    refresh: 'mock_refresh_123',
-                    user: { username, role: 'Doctor', hospital: 'General Hospital' }
-                };
-            }
+            const data = await loginCall(username, password);
 
             localStorage.setItem('access_token', data.access);
             if (data.refresh) {
@@ -46,19 +40,20 @@ export const AuthProvider = ({ children }) => {
             return true;
         } catch (error) {
             console.error('Login error', error);
-            toast.error('Invalid credentials or server error');
+            const errorMsg = error.response?.data?.error || 'Invalid credentials or server error';
+            toast.error(errorMsg);
             return false;
         }
     };
 
     const logout = async () => {
         try {
-            // Simulate API call for logout
-            try {
-                await logoutCall();
-            } catch (e) {
-                console.warn('API logout failed, performing local logout');
+            const refresh = localStorage.getItem('refresh_token');
+            if (refresh) {
+                await logoutCall(refresh);
             }
+        } catch (e) {
+            console.warn('API logout failed, performing local logout');
         } finally {
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');

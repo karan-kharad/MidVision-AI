@@ -38,22 +38,21 @@ class LoginView(APIView):
         })
 
 
-class LoyoutView(APIView):
+class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        def post (self, request):
-           try:
-                refersh = request.data.get('refresh')
-                token = RefreshToken(refersh)
-                token.blacklist()
-                return Response({'message': 'Logged out successfully'}, status=status.HTTP_205_RESET_CONTENT)
-           except Exception:
-                   return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            refresh = request.data.get('refresh')
+            token = RefreshToken(refresh)
+            token.blacklist()
+            return Response({'message': 'Logged out successfully'}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception:
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
         
-class UserProfileView(APIView):
-    permissoion_classes = [IsAuthenticated]
-    serialiser_class = UserProfileSerializer
+class UserProfileView(generics.RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserProfileSerializer
 
     def get_object(self):
         return self.request.user

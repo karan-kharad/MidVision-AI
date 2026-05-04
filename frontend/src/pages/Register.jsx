@@ -11,7 +11,7 @@ const Register = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        role: 'Doctor',
+        role: 'doctor',
         hospital: '',
         phone: '',
     });
@@ -23,7 +23,7 @@ const Register = () => {
     };
 
     const handleRoleToggle = (role) => {
-        setFormData({ ...formData, role });
+        setFormData({ ...formData, role: role.toLowerCase() });
     };
 
     const handleSubmit = async (e) => {
@@ -35,15 +35,24 @@ const Register = () => {
 
         setIsLoading(true);
         try {
-            try {
-                await registerCall(formData);
-            } catch (e) {
-                console.warn('API register failed, proceeding locally');
-            }
+            // Map frontend fields to backend serializer fields
+            const payload = {
+                username: formData.username,
+                email: formData.email,
+                role: formData.role,
+                hospital_name: formData.hospital,
+                phone: formData.phone,
+                password: formData.password,
+                password2: formData.confirmPassword
+            };
+
+            await registerCall(payload);
             toast.success('Registration successful! Please login.');
             navigate('/login');
         } catch (error) {
-            toast.error('Registration failed. Please try again.');
+            console.error('Registration error', error);
+            const errorMsg = error.response?.data ? Object.values(error.response.data).flat()[0] : 'Registration failed';
+            toast.error(errorMsg);
         } finally {
             setIsLoading(false);
         }
@@ -53,8 +62,9 @@ const Register = () => {
         <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4 py-12">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-8 md:p-12">
                 <div className="flex flex-col items-center mb-8">
-                    <div className="bg-primary bg-opacity-10 p-3 rounded-xl text-primary mb-4">
+                    <div className="flex items-center space-x-2 text-primary mb-2">
                         <Activity className="w-8 h-8" />
+                        <span className="text-2xl font-bold">MedVision AI</span>
                     </div>
                     <h2 className="text-3xl font-bold text-gray-900">Create an Account</h2>
                     <p className="text-gray-500 mt-2">Join MedVision AI to access advanced diagnostics</p>
@@ -65,7 +75,7 @@ const Register = () => {
                         <div className="bg-gray-100 p-1 rounded-lg inline-flex">
                             <button
                                 type="button"
-                                className={`px-6 py-2 rounded-md font-medium text-sm transition-all ${formData.role === 'Doctor' ? 'bg-white shadow-sm text-primary' : 'text-gray-500 hover:text-gray-700'
+                                className={`px-6 py-2 rounded-md font-medium text-sm transition-all ${formData.role === 'doctor' ? 'bg-white shadow-sm text-primary' : 'text-gray-500 hover:text-gray-700'
                                     }`}
                                 onClick={() => handleRoleToggle('Doctor')}
                             >
@@ -73,7 +83,7 @@ const Register = () => {
                             </button>
                             <button
                                 type="button"
-                                className={`px-6 py-2 rounded-md font-medium text-sm transition-all ${formData.role === 'Radiologist' ? 'bg-white shadow-sm text-primary' : 'text-gray-500 hover:text-gray-700'
+                                className={`px-6 py-2 rounded-md font-medium text-sm transition-all ${formData.role === 'radiologist' ? 'bg-white shadow-sm text-primary' : 'text-gray-500 hover:text-gray-700'
                                     }`}
                                 onClick={() => handleRoleToggle('Radiologist')}
                             >
@@ -85,31 +95,31 @@ const Register = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                            <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required className="input-field" placeholder="Dr. John Doe" />
+                            <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required className="input-field" placeholder="Dr. John Doe" autoComplete="name" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
-                            <input type="text" name="username" value={formData.username} onChange={handleChange} required className="input-field" placeholder="johndoe" />
+                            <input type="text" name="username" value={formData.username} onChange={handleChange} required className="input-field" placeholder="johndoe" autoComplete="username" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                            <input type="email" name="email" value={formData.email} onChange={handleChange} required className="input-field" placeholder="john@example.com" />
+                            <input type="email" name="email" value={formData.email} onChange={handleChange} required className="input-field" placeholder="john@example.com" autoComplete="email" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                            <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required className="input-field" placeholder="+1 (555) 000-0000" />
+                            <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required className="input-field" placeholder="+1 (555) 000-0000" autoComplete="tel" />
                         </div>
                         <div className="col-span-1 md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 mb-2">Hospital / Clinic Name</label>
-                            <input type="text" name="hospital" value={formData.hospital} onChange={handleChange} required className="input-field" placeholder="General Medical Center" />
+                            <input type="text" name="hospital" value={formData.hospital} onChange={handleChange} required className="input-field" placeholder="General Medical Center" autoComplete="organization" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <input type="password" name="password" value={formData.password} onChange={handleChange} required className="input-field" placeholder="••••••••" />
+                            <input type="password" name="password" value={formData.password} onChange={handleChange} required className="input-field" placeholder="••••••••" autoComplete="new-password" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
-                            <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required className="input-field" placeholder="••••••••" />
+                            <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required className="input-field" placeholder="••••••••" autoComplete="new-password" />
                         </div>
                     </div>
 

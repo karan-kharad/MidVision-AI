@@ -7,7 +7,7 @@ from .serializers import PatientSerializer
 from accounts.permissions import IsDoctor 
 
 # Create your views here.
-class PatinetListCreateView(generics.ListCreateAPIView):
+class PatientListCreateView(generics.ListCreateAPIView):
     serializer_class = PatientSerializer
     permission_classes = [IsAuthenticated, IsDoctor]
 
@@ -17,7 +17,7 @@ class PatinetListCreateView(generics.ListCreateAPIView):
             return Patient.objects.filter(doctor=user)
         return Patient.objects.none()
     
-class PatinetDetailView(generics.RetrieveUpdateDestroyAPIView):
+class PatientDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PatientSerializer
     permission_classes = [IsAuthenticated, IsDoctor]
 

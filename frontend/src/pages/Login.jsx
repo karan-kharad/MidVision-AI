@@ -53,9 +53,9 @@ const Login = () => {
                             Empowering doctors and radiologists with instant, accurate fracture detection and comprehensive medical reports.
                         </p>
                     </div>
-                    <div className="bg-white bg-opacity-10 rounded-xl p-6 backdrop-blur-sm border border-white border-opacity-20">
-                        <p className="text-sm italic mb-4">"MedVision has reduced our diagnostic turnaround time by 60%, allowing us to treat patients faster."</p>
-                        <p className="text-sm font-semibold">- Dr. Anjali Desai, Head of Radiology</p>
+                    <div className="bg-white/10 rounded-xl p-6 backdrop-blur-md border border-white/20">
+                        <p className="text-sm italic mb-4 text-white">"MedVision has reduced our diagnostic turnaround time by 60%, allowing us to treat patients faster."</p>
+                        <p className="text-sm font-semibold text-blue-50">- Dr. Anjali Desai, Head of Radiology</p>
                     </div>
                 </div>
 
@@ -75,6 +75,7 @@ const Login = () => {
                                 onChange={(e) => setUsername(e.target.value)}
                                 className="input-field"
                                 placeholder="Enter your username"
+                                autoComplete="username"
                             />
                         </div>
 
@@ -90,6 +91,7 @@ const Login = () => {
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="input-field pr-10"
                                     placeholder="Enter your password"
+                                    autoComplete="current-password"
                                 />
                                 <button
                                     type="button"
