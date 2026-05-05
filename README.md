@@ -1,6 +1,6 @@
-# MedVision AI
+# 🏥 MedVision AI: Clinical Diagnostic Intelligence
 
-A comprehensive, full-stack hospital web application for Doctors and Radiologists that features instant, AI-powered medical scan analysis. By simply uploading X-Rays, MRIs, or CT Scans, MedVision leverages Google Gemini to automatically pinpoint and diagnose fractures with high precision, generating detailed medical reports and drawing bounding-box annotations onto the scan via OpenCV.
+MedVision AI is a premium, full-stack medical diagnostic platform designed for modern hospitals and radiology departments. It bridges the gap between raw medical imaging and actionable clinical insights by leveraging Google Gemini's advanced multimodal vision capabilities and OpenCV's precise geometric processing.
 
 **Architect:** Karan Kharad
 
@@ -8,21 +8,23 @@ A comprehensive, full-stack hospital web application for Doctors and Radiologist
 
 ## 🚀 Key Features
 
-*   **AI Fracture Detection:** Powered by Google Gemini (`gemini-2.5-flash`), instantly analyzing uploaded scans for acute fractures, dislocations, and bone densities.
-*   **Computer Vision Annotation:** Uses `OpenCV` to draw exact visual bounding boxes around detected fractures, generating an original vs. annotated view.
-*   **Automated Medical Reports:** Instantly generates thorough medical reports (Clinical Indication, Technique, Findings, Impression, Recommendation) using the `gemini-1.5-flash` model.
-*   **Patient Database:** Complete CRUD dashboard for managing patients, assigning doctors, and reviewing comprehensive scan histories.
-*   **Role-Based Access Control:** Secure JWT Authentication for Doctors and administrative Radiologists.
+*   **🧠 AI-Powered Fracture Detection**: Uses Google Gemini (Vision) to analyze X-Rays, MRIs, and CT scans with orthopedic-grade precision.
+*   **🎯 YOLO-Style Annotations**: Features a high-fidelity computer vision engine that draws professional, badge-labeled bounding boxes around detected abnormalities, inspired by state-of-the-art detection models (YOLOv8).
+*   **🌓 Dual-Theme Engine (Clinical/Tech)**: Includes a "Clinical Clean" Light Mode for daytime diagnostic work and a "Deep-Tech AI" Dark Mode for focused analysis sessions, with persistence across sessions.
+*   **📄 Automated Radiology Reports**: Generates formal, multi-section medical reports including Clinical Indication, Technique, Findings, Impression, and Recommendation.
+*   **🔍 Advanced Clinical Search**: A global search hub that allows practitioners to filter through thousands of clinical records by patient name, condition, or scan type instantly.
+*   **👤 Practitioner Profiles**: Full user management system with profile customization, secure license verification, and password recovery flows.
+*   **🏢 Patient Management**: A comprehensive dashboard for managing the "Practitioner Registry," assigning cases, and reviewing historic diagnostic progressions.
 
 ---
 
 ## 🛠️ Technology Stack
 
-*   **Frontend**: React.js, Vite, Tailwind CSS, Lucide Icons, React Router
-*   **Backend**: Python, Django, Django REST Framework (DRF)
-*   **AI & Logic**: Google Generative AI (Gemini), OpenCV (cv2)
-*   **Database**: SQLite / PostgreSQL
-*   **Auth & Storage**: SimpleJWT (Access/Refresh Tokens), MultiPart FormData file hosting
+*   **Frontend**: React.js (Vite), Tailwind CSS, Lucide Icons, Recharts (Data Viz)
+*   **Backend**: Python, Django 6.0, Django REST Framework
+*   **AI Engine**: Google Generative AI (Gemini 1.5/2.0), OpenCV (Computer Vision)
+*   **Security**: JWT Authentication (SimpleJWT), CORS Protection
+*   **Database**: PostgreSQL (Production-ready) / SQLite
 
 ---
 
@@ -37,51 +39,29 @@ A comprehensive, full-stack hospital web application for Doctors and Radiologist
     ```bash
     python -m venv venv
     source venv/bin/activate  # On Windows use: venv\Scripts\activate
-    pip install -r requirements.txt
+    python -m pip install -r ../requirements.txt
     ```
 3.  Configure your environment variables:
-    *   Create a `.env` file in the `medvision/medvision/` directory.
-    *   Add your Gemini API Key: `GEMINI_API_KEY=your_google_api_key_here`
-4.  Run database migrations:
+    *   Create a `.env` file in `medvision/`.
+    *   Add your Gemini API Key: `GEMINI_API_KEY=your_key_here`
+4.  Run migrations & Start server:
     ```bash
-    python manage.py makemigrations
     python manage.py migrate
-    ```
-5.  Start the backend server:
-    ```bash
     python manage.py runserver
     ```
-    *The API will run locally at `http://localhost:8000/api/`*
 
 ### 2. Frontend (React / Vite)
-1.  Open a new terminal window and navigate to the frontend directory:
+1.  Open a new terminal window:
     ```bash
     cd frontend
-    ```
-2.  Install all Node modules and dependencies:
-    ```bash
     npm install
-    ```
-3.  Start the development server:
-    ```bash
     npm run dev
     ```
-    *The UI will run locally at `http://localhost:5173/`*
 
 ---
-
-## 📸 Usage
-
-1.  Access the web application at `localhost:5173`.
-2.  Login with your radiologist/doctor credentials.
-3.  Navigate to **Upload Scan**.
-4.  Select a patient, choose the scan type (X-Ray, MRI, CT), and attach your `.jpg`/`.png`/`.dicom` file.
-5.  Click **Run AI Analysis**. Wait for the API to parse the image, generate bounding coordinates, and render your clinical report!
-
----
-
-## 🤝 Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## 📄 License
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+© 2026 MedVision AI - Built by **Karan Kharad**
