@@ -35,36 +35,36 @@ def analyze_scan(image_path, scan_type='xray'):
         uploaded_img = genai.upload_file(path=image_path)
 
         prompt = f"""
-You are an expert radiologist AI analyzing a {scan_type.upper()} image.
-Return ONLY a JSON object, no extra text, no markdown:
+You are a state-of-the-art Medical AI specialized in orthopedic radiology.
+Analyze this {scan_type.upper()} scan for any abnormalities, specifically fractures or dislocations.
+
+Return ONLY a JSON object:
 
 {{
-    "condition": "Primary detected condition",
+    "condition": "Specific diagnosis (e.g., Distal Radius Fracture)",
     "fracture_detected": true,
-    "confidence": 87,
+    "confidence": 95,
     "severity": "high",
-    "location": "Specific bone or region",
+    "location": "Detailed anatomical location",
     "findings": [
-        "Finding 1",
-        "Finding 2",
-        "Finding 3"
+        "Concise clinical finding 1",
+        "Concise clinical finding 2"
     ],
-    "recommendation": "Clinical recommendation",
+    "recommendation": "Immediate clinical next steps",
     "bbox": {{
-        "x_min": 120,
-        "y_min": 200,
-        "x_max": 350,
-        "y_max": 420
+        "x_min": 0-1000,
+        "y_min": 0-1000,
+        "x_max": 0-1000,
+        "y_max": 0-1000
     }}
 }}
 
-Rules:
-- confidence: number 0-100
-- severity: high / medium / low / normal
-- fracture_detected: true or false
-- bbox: pixel coordinates of fracture area
-- If no fracture set all bbox to 0
-- Return ONLY JSON
+RULES FOR DETECTION:
+1. "bbox" MUST be normalized coordinates [0-1000].
+2. [0,0] is top-left, [1000,1000] is bottom-right.
+3. The box should TIGHTLY enclose the abnormality (YOLO style).
+4. If NO abnormality is found, set all bbox values to 0 and fracture_detected to false.
+5. Return ONLY raw JSON. No markdown backticks.
 """
         response = model.generate_content([prompt, uploaded_img])
         return safe_parse_json(response.text)

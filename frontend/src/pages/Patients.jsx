@@ -78,13 +78,13 @@ const Patients = () => {
 
                 <div className="flex space-x-4 w-full sm:w-auto">
                     <div className="relative flex-1 sm:w-64">
-                        <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        <Search className="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                         <input
                             type="text"
                             placeholder="Search by name or phone..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="input-field pl-10 w-full"
+                            className="input-field !pl-12 w-full"
                         />
                     </div>
                     <button onClick={() => setIsModalOpen(true)} className="btn-primary whitespace-nowrap">

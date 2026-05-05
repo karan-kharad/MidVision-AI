@@ -1,47 +1,131 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Background */
+  --bg-primary: #F7FBFF;
+  --bg-secondary: #FFFFFF;
+  --bg-card: #FFFFFF;
+
+  /* Text */
+  --text-primary: #0A192F;
+  --text-secondary: #546E7A;
+  --text-muted: #90A4AE;
+
+  /* Brand */
+  --primary: #0D47A1;
+  --primary-hover: #1565C0;
+
+  /* AI Accent */
+  --accent: #00E5FF;
+  --accent-soft: #E1F5FE;
+
+  /* Borders */
+  --border: #E0E0E0;
+
+  /* Status */
+  --success: #00C853;
+  --warning: #FF9100;
+  --error: #FF1744;
+
+  /* Shadow */
+  --shadow: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+  /* Background */
+  --bg-primary: #0A192F;
+  --bg-secondary: #112240;
+  --bg-card: #1B2A41;
+
+  /* Text */
+  --text-primary: #E6F1FF;
+  --text-secondary: #A8B2D1;
+  --text-muted: #6C7A89;
+
+  /* Brand */
+  --primary: #1976D2;
+  --primary-hover: #42A5F5;
+
+  /* AI Accent */
+  --accent: #00E5FF;
+  --accent-soft: rgba(0, 229, 255, 0.1);
+
+  /* Borders */
+  --border: #233554;
+
+  /* Status */
+  --success: #00E676;
+  --warning: #FFB300;
+  --error: #FF5252;
+
+  /* Shadow */
+  --shadow: rgba(0, 0, 0, 0.4);
+}
 
 @theme {
-  --font-sans: 'Inter', sans-serif;
+  --font-sans: 'Outfit', sans-serif;
   
-  --color-primary: #2563EB;
-  --color-secondary: #0EA5E9;
-  --color-success: #10B981;
-  --color-warning: #F59E0B;
-  --color-danger: #EF4444;
-  --color-background: #F8FAFC;
-  --color-surface: #FFFFFF;
-  --color-border-theme: #E2E8F0;
-  --color-text-theme: #1E293B;
-  --color-muted: #64748B;
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-hover);
+  --color-secondary: var(--bg-secondary);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--error);
+  --color-background: var(--bg-primary);
+  --color-surface: var(--bg-card);
+  --color-text-theme: var(--text-primary);
 }
 
 @layer base {
   body {
-    background-color: var(--color-background);
-    color: var(--color-text-theme);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     font-family: var(--font-sans);
+    transition: background-color 0.4s ease, color 0.4s ease;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 }
 
+/* Glassmorphism */
+.glass {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px 0 var(--shadow);
+}
+
+/* Custom Card Styles */
 .medical-card {
-  @apply bg-surface rounded-xl shadow-sm border border-[var(--color-border-theme)] overflow-hidden transition-all duration-300;
-}
-.medical-card:hover {
-  @apply shadow-md;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px -1px var(--shadow);
+  @apply rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-xl hover:-translate-y-1;
 }
 
+/* Inputs */
 .input-field {
-  @apply w-full px-4 py-2 border border-[var(--color-border-theme)] rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all duration-200 bg-white;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  @apply w-full px-5 py-3 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all duration-300;
 }
 
+/* Buttons */
 .btn-primary {
-  @apply bg-primary hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex justify-center items-center;
+  background-color: var(--primary);
+  color: white;
+  @apply hover:bg-primary-dark font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 active:scale-95 flex justify-center items-center gap-2;
 }
 
-.btn-outline {
-  @apply border border-[var(--color-border-theme)] hover:border-[var(--color-muted)] text-[var(--color-text-theme)] font-medium py-2 px-4 rounded-lg transition-all duration-200 flex justify-center items-center bg-white;
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

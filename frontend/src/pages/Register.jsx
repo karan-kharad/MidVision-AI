@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Activity } from 'lucide-react';
 import { registerCall } from '../api/auth';
 import toast from 'react-hot-toast';
+import logo from '../assets/logo-removebg-preview.png';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -35,7 +36,6 @@ const Register = () => {
 
         setIsLoading(true);
         try {
-            // Map frontend fields to backend serializer fields
             const payload = {
                 username: formData.username,
                 email: formData.email,
@@ -59,23 +59,22 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4 py-12">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-8 md:p-12">
+        <div className="min-h-screen bg-[#F0F9FF] flex items-center justify-center p-4 py-12">
+            <div className="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl w-full max-w-2xl p-8 md:p-12 border border-white/50">
                 <div className="flex flex-col items-center mb-8">
-                    <div className="flex items-center space-x-2 text-primary mb-2">
-                        <Activity className="w-8 h-8" />
-                        <span className="text-2xl font-bold">MedVision AI</span>
+                    <div className="flex flex-col items-center mb-12">
+                        <img src={logo} alt="MedVision AI" className="h-40 w-auto object-contain" />
                     </div>
-                    <h2 className="text-3xl font-bold text-gray-900">Create an Account</h2>
-                    <p className="text-gray-500 mt-2">Join MedVision AI to access advanced diagnostics</p>
+                    <h2 className="text-3xl font-bold text-secondary tracking-tight">Create an Account</h2>
+                    <p className="text-slate-500 mt-2 font-medium">Join MedVision AI to access advanced diagnostics</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="flex justify-center mb-6">
-                        <div className="bg-gray-100 p-1 rounded-lg inline-flex">
+                        <div className="bg-slate-100 p-1.5 rounded-2xl inline-flex">
                             <button
                                 type="button"
-                                className={`px-6 py-2 rounded-md font-medium text-sm transition-all ${formData.role === 'doctor' ? 'bg-white shadow-sm text-primary' : 'text-gray-500 hover:text-gray-700'
+                                className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${formData.role === 'doctor' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:text-slate-700'
                                     }`}
                                 onClick={() => handleRoleToggle('Doctor')}
                             >
@@ -83,7 +82,7 @@ const Register = () => {
                             </button>
                             <button
                                 type="button"
-                                className={`px-6 py-2 rounded-md font-medium text-sm transition-all ${formData.role === 'radiologist' ? 'bg-white shadow-sm text-primary' : 'text-gray-500 hover:text-gray-700'
+                                className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${formData.role === 'radiologist' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:text-slate-700'
                                     }`}
                                 onClick={() => handleRoleToggle('Radiologist')}
                             >
@@ -93,32 +92,32 @@ const Register = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Full Name</label>
                             <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required className="input-field" placeholder="Dr. John Doe" autoComplete="name" />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Username</label>
                             <input type="text" name="username" value={formData.username} onChange={handleChange} required className="input-field" placeholder="johndoe" autoComplete="username" />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Email Address</label>
                             <input type="email" name="email" value={formData.email} onChange={handleChange} required className="input-field" placeholder="john@example.com" autoComplete="email" />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Phone Number</label>
                             <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required className="input-field" placeholder="+1 (555) 000-0000" autoComplete="tel" />
                         </div>
-                        <div className="col-span-1 md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Hospital / Clinic Name</label>
+                        <div className="col-span-1 md:col-span-2 space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Hospital / Clinic Name</label>
                             <input type="text" name="hospital" value={formData.hospital} onChange={handleChange} required className="input-field" placeholder="General Medical Center" autoComplete="organization" />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Password</label>
                             <input type="password" name="password" value={formData.password} onChange={handleChange} required className="input-field" placeholder="••••••••" autoComplete="new-password" />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Confirm Password</label>
                             <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required className="input-field" placeholder="••••••••" autoComplete="new-password" />
                         </div>
                     </div>
@@ -126,19 +125,19 @@ const Register = () => {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="btn-primary w-full py-3 mt-6"
+                        className="btn-primary w-full py-4 text-lg mt-6"
                     >
                         {isLoading ? (
-                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                         ) : (
-                            "Create Account"
+                            "Create Clinical Account"
                         )}
                     </button>
                 </form>
 
-                <p className="mt-8 text-center text-sm text-gray-600">
+                <p className="mt-8 text-center text-sm text-slate-600">
                     Already have an account?{' '}
-                    <Link to="/login" className="text-primary font-semibold hover:underline">
+                    <Link to="/login" className="text-primary font-bold hover:underline">
                         Sign In here
                     </Link>
                 </p>

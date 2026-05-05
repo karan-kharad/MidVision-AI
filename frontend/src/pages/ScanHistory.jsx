@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Calendar, Loader2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import SeverityBadge from '../components/SeverityBadge';
 import { getScans } from '../api/scans';
 
@@ -47,11 +47,20 @@ const mockScansHistory = [
 ];
 
 const ScanHistory = () => {
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchParams] = useSearchParams();
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
     const [selectedType, setSelectedType] = useState('All');
     const [selectedSeverity, setSelectedSeverity] = useState('All');
     const [scans, setScans] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Sync with query param if it changes
+        const query = searchParams.get('q');
+        if (query !== null) {
+            setSearchTerm(query);
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         const fetchScans = async () => {
@@ -103,13 +112,13 @@ const ScanHistory = () => {
             {/* Filters */}
             <div className="medical-card p-4 flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
-                    <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Search className="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <input
                         type="text"
                         placeholder="Search by patient or condition..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="input-field pl-10"
+                        className="input-field !pl-12"
                     />
                 </div>
 

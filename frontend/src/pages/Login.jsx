@@ -1,8 +1,10 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { Eye, EyeOff, Activity } from 'lucide-react';
+import { Eye, EyeOff, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
+import logo from '../assets/logo-removebg-preview.png';
+import hero from '../assets/hero.png';
 
 const Login = () => {
     const [username, setUsername] = useState('dr.sharma');
@@ -30,98 +32,131 @@ const Login = () => {
         setIsLoading(false);
 
         if (success) {
-            toast.success(`Welcome back!`);
+            toast.success(`Welcome back, Dr.!`);
             navigate('/dashboard');
         }
     };
 
     return (
-        <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl flex overflow-hidden flex-col md:flex-row">
+        <div className="min-h-screen bg-[#F0F9FF] flex items-center justify-center p-4 relative overflow-hidden">
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px]"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 rounded-full blur-[120px]"></div>
 
-                {/* Left Side - Brand & Illustration */}
-                <div className="md:w-1/2 bg-primary p-12 text-white flex flex-col justify-between hidden md:flex">
-                    <div>
-                        <div className="flex items-center space-x-2 space-y-4 mb-8 text-2xl font-bold">
-                            <Activity className="w-8 h-8" />
-                            <span>MedVision AI</span>
+            <div className="bg-white/40 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl w-full max-w-6xl flex overflow-hidden border border-white/50 relative z-10 min-h-[700px]">
+                
+                <div className="md:w-3/5 relative hidden md:block overflow-hidden">
+                    <img src={hero} alt="Hero" className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent flex flex-col justify-end p-16 text-white">
+                        <div className="animate-float">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sm font-medium mb-6">
+                                <Sparkles className="w-4 h-4 text-primary" />
+                                <span>Powered by Advanced AI 2.0</span>
+                            </div>
+                            <h1 className="text-5xl font-extrabold mb-6 leading-tight">
+                                Precision Diagnostics <br/> <span className="text-primary">Redefined.</span>
+                            </h1>
+                            <p className="text-blue-100 text-xl leading-relaxed max-w-lg mb-10">
+                                Experience the future of medical imaging with instant fracture detection and automated clinical reporting.
+                            </p>
                         </div>
-                        <h1 className="text-4xl font-bold mb-4 leading-tight">
-                            Advanced AI Diagnostics for Modern Healthcare
-                        </h1>
-                        <p className="text-blue-100 text-lg">
-                            Empowering doctors and radiologists with instant, accurate fracture detection and comprehensive medical reports.
-                        </p>
-                    </div>
-                    <div className="bg-white/10 rounded-xl p-6 backdrop-blur-md border border-white/20">
-                        <p className="text-sm italic mb-4 text-white">"MedVision has reduced our diagnostic turnaround time by 60%, allowing us to treat patients faster."</p>
-                        <p className="text-sm font-semibold text-blue-50">- Dr. Anjali Desai, Head of Radiology</p>
+                        
+                        <div className="grid grid-cols-3 gap-6 pt-10 border-t border-white/10">
+                            <div>
+                                <p className="text-3xl font-bold">99.2%</p>
+                                <p className="text-xs text-blue-200 uppercase tracking-wider">AI Accuracy</p>
+                            </div>
+                            <div>
+                                <p className="text-3xl font-bold">5s</p>
+                                <p className="text-xs text-blue-200 uppercase tracking-wider">Processing Time</p>
+                            </div>
+                            <div>
+                                <p className="text-3xl font-bold">50k+</p>
+                                <p className="text-xs text-blue-200 uppercase tracking-wider">Scans Analyzed</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* Right Side - Login Form */}
-                <div className="md:w-1/2 p-8 md:p-12 bg-white flex flex-col justify-center">
-                    <div className="mb-8 text-center md:text-left">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-                        <p className="text-gray-500">Please enter your credentials to access your account.</p>
+                <div className="md:w-2/5 p-10 md:p-16 flex flex-col justify-center bg-white/80">
+                    <div className="mb-12">
+                        <div className="flex justify-start mb-14">
+                            <img src={logo} alt="MedVision AI" className="h-40 w-auto object-contain" />
+                        </div>
+                        <h2 className="text-4xl font-bold text-secondary mb-3">Welcome Back</h2>
+                        <p className="text-slate-500 text-lg font-medium">Access your clinical dashboard</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Username</label>
                             <input
                                 type="text"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 className="input-field"
-                                placeholder="Enter your username"
+                                placeholder="Enter your clinical ID"
                                 autoComplete="username"
                             />
                         </div>
 
-                        <div>
-                            <div className="flex justify-between items-center mb-2">
-                                <label className="block text-sm font-medium text-gray-700">Password</label>
-                                <a href="#" className="text-sm text-primary hover:underline">Forgot password?</a>
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center px-1">
+                                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Password</label>
+                                <Link to="/forgot-password" className="text-xs font-bold text-primary hover:underline">Forgot password?</Link>
                             </div>
-                            <div className="relative">
-                                <input
+                            <div className="relative group">
+                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-primary transition-colors" size={18} />
+                                <input 
                                     type={showPassword ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="input-field pr-10"
-                                    placeholder="Enter your password"
+                                    className="input-field !pl-14 py-4"
+                                    placeholder="••••••••"
                                     autoComplete="current-password"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-primary transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
                             </div>
                         </div>
 
+                        <div className="flex items-center gap-2 px-1">
+                            <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" id="remember" />
+                            <label htmlFor="remember" className="text-sm text-slate-600">Keep me logged in for this session</label>
+                        </div>
+
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="btn-primary w-full py-3"
+                            className="btn-primary w-full py-4 text-lg mt-4 group"
                         >
                             {isLoading ? (
-                                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                             ) : (
-                                "Sign In"
+                                <>
+                                    <ShieldCheck className="w-5 h-5 transition-transform group-hover:scale-110" />
+                                    Secure Sign In
+                                </>
                             )}
                         </button>
                     </form>
 
-                    <p className="mt-8 text-center text-sm text-gray-600">
-                        Don't have an account?{' '}
-                        <Link to="/register" className="text-primary font-semibold hover:underline">
-                            Register here
-                        </Link>
-                    </p>
+                    <div className="mt-12 pt-8 border-t border-slate-100 flex flex-col items-center gap-4">
+                        <p className="text-slate-600">
+                            New practitioner?{' '}
+                            <Link to="/register" className="text-primary font-bold hover:underline">
+                                Request Access
+                            </Link>
+                        </p>
+                        <div className="flex items-center gap-6 opacity-30 grayscale contrast-125">
+                            <Zap className="w-6 h-6" />
+                            <span className="text-xs font-bold tracking-widest uppercase">HIPAA Compliant</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

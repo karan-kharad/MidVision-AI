@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import Sidebar from './Sidebar';
@@ -6,6 +6,7 @@ import Navbar from './Navbar';
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, loading } = useContext(AuthContext);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     if (loading) {
         return (
@@ -20,11 +21,11 @@ const ProtectedRoute = ({ children }) => {
     }
 
     return (
-        <div className="flex h-screen bg-[#F8FAFC]">
-            <Sidebar />
-            <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex h-screen bg-[#F0F9FF]">
+            <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+            <div className="flex-1 flex flex-col overflow-hidden transition-all duration-300">
                 <Navbar />
-                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent p-6">
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent p-4 md:p-8">
                     {children}
                 </main>
             </div>

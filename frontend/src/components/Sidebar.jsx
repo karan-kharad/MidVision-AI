@@ -1,10 +1,25 @@
-import React, { useContext } from 'react';
-import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, FileImage, FolderOpen, FileText, LogOut } from 'lucide-react';
+import React, { useContext, useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { 
+    LayoutDashboard, 
+    Users, 
+    FileImage, 
+    FolderOpen, 
+    FileText, 
+    LogOut, 
+    Search,
+    Sun,
+    Moon
+} from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import logo from '../assets/logo-removebg-preview.png';
 
-const Sidebar = () => {
+const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     const { user, logout } = useContext(AuthContext);
+    const { isDarkMode, toggleTheme } = useTheme();
+    const [searchQuery, setSearchQuery] = useState('');
+    const navigate = useNavigate();
 
     const navItems = [
         { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
@@ -14,52 +29,115 @@ const Sidebar = () => {
         { name: 'Reports', icon: FileText, path: '/reports' },
     ];
 
-    return (
-        <div className="w-64 bg-white border-r border-[#E2E8F0] flex flex-col justify-between h-full shadow-sm">
-            <div>
-                <div className="p-6 flex items-center space-x-3">
-                    <div className="bg-primary bg-opacity-10 p-2 rounded-lg text-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2v7.31" /><path d="M14 9.3V1.99" /><path d="M8.5 2h7" /><path d="M14 9.3a6.5 6.5 0 1 1-4 0" /><path d="M5.52 16h12.96" /></svg>
-                    </div>
-                    <span className="text-xl font-bold text-gray-800 tracking-tight">MedVision AI</span>
-                </div>
+    const handleSearch = (e) => {
+        if (e.key === 'Enter' && searchQuery.trim()) {
+            navigate(`/scans?q=${encodeURIComponent(searchQuery.trim())}`);
+        }
+    };
 
-                <nav className="mt-4 px-4 space-y-1">
-                    {navItems.map((item) => (
-                        <NavLink
-                            key={item.name}
-                            to={item.path}
-                            className={({ isActive }) =>
-                                `flex items-center px-4 py-3 rounded-lg transition-colors group ${isActive
-                                    ? 'bg-blue-50 text-primary font-medium'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`
-                            }
-                        >
-                            <item.icon className="w-5 h-5 mr-3" />
-                            {item.name}
-                        </NavLink>
-                    ))}
-                </nav>
+    return (
+        <div 
+            className={`flex flex-col h-screen transition-all duration-500 ease-in-out z-50 ${
+                isCollapsed ? 'w-24' : 'w-72'
+            } bg-[var(--bg-secondary)] text-[var(--text-primary)] border-r border-[var(--border)] shadow-[20px_0_40px_-20px_var(--shadow)]`}
+        >
+            {/* Top Logo / User Section */}
+            <div className={`pt-10 pb-6 flex items-center transition-all duration-500 ${isCollapsed ? 'justify-center' : 'px-8 justify-between'}`}>
+                <NavLink to="/profile" className="relative w-12 h-12 block group cursor-pointer">
+                    <div className="w-full h-full rounded-2xl bg-[var(--primary)] flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                         <img src={logo} alt="L" className="w-8 h-8 object-contain invert brightness-200" />
+                    </div>
+                    {!isCollapsed && (
+                        <div className="absolute left-16 top-0 flex flex-col whitespace-nowrap">
+                            <span className="font-bold text-base tracking-tight text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">MedVision AI</span>
+                            <span className="text-[10px] text-[var(--text-secondary)] font-medium tracking-wide">View Profile</span>
+                        </div>
+                    )}
+                </NavLink>
             </div>
 
-            <div className="p-4 border-t border-[#E2E8F0] m-4 bg-gray-50 rounded-xl">
-                <div className="flex items-center mb-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-primary font-bold text-lg">
-                        {user?.username?.charAt(0)?.toUpperCase() || 'U'}
-                    </div>
-                    <div className="ml-3 overflow-hidden">
-                        <p className="text-sm font-medium text-gray-900 truncate">{user?.username || 'User'}</p>
-                        <p className="text-xs text-gray-500 truncate">{user?.role || 'Guest'}</p>
-                    </div>
+            {/* Search Bar */}
+            <div className={`px-6 mb-8 transition-all duration-500 ${isCollapsed ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
+                <div className="relative flex items-center bg-[var(--bg-primary)] rounded-2xl p-4 border border-[var(--border)] hover:border-[var(--accent)]/50 transition-all">
+                    <Search size={18} className="text-[var(--text-muted)] absolute left-4" />
+                    <input 
+                        type="text" 
+                        placeholder="Search..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={handleSearch}
+                        className="bg-transparent border-none outline-none text-sm font-medium w-full !pl-10 placeholder:text-[var(--text-muted)] text-[var(--text-primary)]"
+                    />
                 </div>
+            </div>
+            
+            {/* Collapsed Search placeholder */}
+            {isCollapsed && (
+                <div className="flex justify-center mb-10">
+                     <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-[var(--bg-primary)] border border-[var(--border)]">
+                        <Search size={18} className="text-[var(--text-muted)]" />
+                     </div>
+                </div>
+            )}
+
+            {/* Navigation Items */}
+            <div className="flex-1 px-4 space-y-1 overflow-y-auto no-scrollbar">
+                {navItems.map((item) => (
+                    <NavLink
+                        key={item.name}
+                        to={item.path}
+                        className={({ isActive }) =>
+                            `flex items-center rounded-2xl transition-all duration-300 group ${
+                                isCollapsed ? 'justify-center p-4' : 'px-6 py-4'
+                            } ${isActive
+                                ? 'text-[var(--accent)] font-bold bg-[var(--accent-soft)]'
+                                : 'text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--accent-soft)]'
+                            }`
+                        }
+                    >
+                        <item.icon className={`transition-transform duration-300 group-hover:scale-110 ${isCollapsed ? 'w-6 h-6' : 'w-5 h-5 mr-4'}`} />
+                        {!isCollapsed && (
+                            <span className="text-sm font-medium tracking-tight animate-in slide-in-from-left-2 duration-300">
+                                {item.name}
+                            </span>
+                        )}
+                    </NavLink>
+                ))}
+            </div>
+
+            {/* Bottom Section: Logout & Toggle */}
+            <div className="p-6 mt-auto space-y-4">
+                {/* Logout Button */}
                 <button
                     onClick={logout}
-                    className="w-full flex items-center justify-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className={`w-full flex items-center transition-all duration-300 ${
+                        isCollapsed ? 'justify-center' : 'px-6'
+                    } py-4 text-[var(--text-secondary)] hover:text-[var(--error)] group`}
                 >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
+                    <LogOut className={`transition-transform duration-300 group-hover:scale-110 ${isCollapsed ? 'w-6 h-6' : 'w-5 h-5 mr-4'}`} />
+                    {!isCollapsed && (
+                        <span className="text-sm font-medium tracking-tight">Logout</span>
+                    )}
                 </button>
+
+                {/* Theme Toggle Switch */}
+                <div className={`flex items-center transition-all duration-300 ${isCollapsed ? 'justify-center' : 'px-6 justify-between'}`}>
+                    {!isCollapsed && (
+                        <div className="flex items-center gap-3 text-[var(--text-secondary)]">
+                            <Sun size={18} className={!isDarkMode ? 'text-[var(--accent)]' : ''} />
+                            <span className="text-sm font-medium">Theme Mode</span>
+                        </div>
+                    )}
+                    
+                    <button 
+                        onClick={toggleTheme}
+                        className={`relative w-14 h-8 rounded-full transition-all duration-500 ${isDarkMode ? 'bg-[var(--primary)]' : 'bg-[var(--border)] shadow-inner'}`}
+                    >
+                        <div className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transform transition-all duration-500 flex items-center justify-center ${isDarkMode ? 'left-7' : 'left-1'}`}>
+                             {isDarkMode ? <Moon size={12} className="text-[var(--primary)]" /> : <Sun size={12} className="text-[var(--primary)]" />}
+                        </div>
+                    </button>
+                </div>
             </div>
         </div>
     );

@@ -1,97 +1,93 @@
 import cv2
 import os 
 import uuid 
+import numpy as np
 from django.conf import settings
 
 def draw_fracture_highlight(image_path, bbox, condition, confidence, severity):
+    """
+    Professional YOLO-style Annotator for MedVision AI.
+    Draws high-fidelity bounding boxes and labels based on Gemini detection data.
+    """
     img = cv2.imread(image_path)
     if img is None:
         return None
 
     height, width = img.shape[:2]
 
+    # YOLO-inspired color palette (Clinical Edition)
     colors = {
-        'high':   (0, 0, 255),
-        'medium': (0, 165, 255),
-        'low':    (0, 255, 255),
-        'normal': (0, 200, 0),
+        'high':   (0, 23, 255),    # Sharp Red
+        'medium': (0, 145, 255),   # Deep Orange
+        'low':    (0, 229, 255),   # AI Cyan
+        'normal': (83, 200, 0),    # Clinical Green
     }
-    color = colors.get(severity, (0, 255, 0))
+    color = colors.get(severity.lower(), (0, 229, 255))
 
-    x_min = int(bbox.get('x_min', 0))
-    y_min = int(bbox.get('y_min', 0))
-    x_max = int(bbox.get('x_max', 0))
-    y_max = int(bbox.get('y_max', 0))
+    # Scale normalized coordinates (0-1000) to actual pixels
+    x_min = int((bbox.get('x_min', 0) * width) / 1000)
+    y_min = int((bbox.get('y_min', 0) * height) / 1000)
+    x_max = int((bbox.get('x_max', 0) * width) / 1000)
+    y_max = int((bbox.get('y_max', 0) * height) / 1000)
 
     if x_max > x_min and y_max > y_min:
-        # Draw fracture box (existing code)
-        overlay = img.copy()
-        cv2.rectangle(overlay, (x_min, y_min), (x_max, y_max), color, -1)
-        cv2.addWeighted(overlay, 0.25, img, 0.75, 0, img)
-        cv2.rectangle(img, (x_min, y_min), (x_max, y_max), color, 3)
+        # 1. Draw Bounding Box (YOLO Style: Thin & Sharp)
+        line_thickness = max(2, int(min(width, height) / 400))
+        cv2.rectangle(img, (x_min, y_min), (x_max, y_max), color, line_thickness)
 
-        # Corner accents
-        c = 20
-        t = 4
-        cv2.line(img, (x_min, y_min), (x_min+c, y_min), color, t)
-        cv2.line(img, (x_min, y_min), (x_min, y_min+c), color, t)
-        cv2.line(img, (x_max, y_min), (x_max-c, y_min), color, t)
-        cv2.line(img, (x_max, y_min), (x_max, y_min+c), color, t)
-        cv2.line(img, (x_min, y_max), (x_min+c, y_max), color, t)
-        cv2.line(img, (x_min, y_max), (x_min, y_max-c), color, t)
-        cv2.line(img, (x_max, y_max), (x_max-c, y_max), color, t)
-        cv2.line(img, (x_max, y_max), (x_max, y_max-c), color, t)
+        # 2. Draw Label "Badge" (Top-Left of Box)
+        label = f"{condition} {confidence}%"
+        font_scale = min(width, height) / 1200
+        font_thickness = max(1, int(font_scale * 2))
+        
+        # Get text size for the background rectangle
+        (tw, th), baseline = cv2.getTextSize(label, cv2.FONT_HERSHEY_DUPLEX, font_scale, font_thickness)
+        
+        # Ensure label doesn't go off top of screen
+        label_y1 = max(y_min - th - 10, 0)
+        label_y2 = y_min
+        
+        # Draw solid background for label
+        cv2.rectangle(img, (x_min, label_y1), (x_min + tw + 10, label_y2), color, -1)
+        
+        # Draw white text on the colored background
+        cv2.putText(img, label, (x_min + 5, label_y2 - 7), 
+                    cv2.FONT_HERSHEY_DUPLEX, font_scale, (255, 255, 255), font_thickness, cv2.LINE_AA)
 
-        # Label
-        label = f"{condition} ({confidence}%)"
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        (tw, th), _ = cv2.getTextSize(label, font, 0.7, 2)
-        cv2.rectangle(img, (x_min, y_min-th-12), (x_min+tw+10, y_min), color, -1)
-        cv2.putText(img, label, (x_min+5, y_min-8), font, 0.7, (255,255,255), 2)
-
-        # Arrow
-        mid_y = y_min + (y_max - y_min) // 2
-        cv2.arrowedLine(img, (x_max+40, mid_y), (x_max+2, mid_y), color, 2, tipLength=0.3)
-        cv2.putText(img, "FRACTURE", (x_max+45, mid_y+5), font, 0.55, color, 2)
+        # 3. Corner Accents (YOLOv8 Modern UI Style)
+        accent_len = int((x_max - x_min) * 0.1)
+        at = line_thickness + 2
+        # Top-Left
+        cv2.line(img, (x_min, y_min), (x_min + accent_len, y_min), color, at)
+        cv2.line(img, (x_min, y_min), (x_min, y_min + accent_len), color, at)
+        # Top-Right
+        cv2.line(img, (x_max, y_min), (x_max - accent_len, y_min), color, at)
+        cv2.line(img, (x_max, y_min), (x_max, y_min + accent_len), color, at)
+        # Bottom-Left
+        cv2.line(img, (x_min, y_max), (x_min + accent_len, y_max), color, at)
+        cv2.line(img, (x_min, y_max), (x_min, y_max - accent_len), color, at)
+        # Bottom-Right
+        cv2.line(img, (x_max, y_max), (x_max - accent_len, y_max), color, at)
+        cv2.line(img, (x_max, y_max), (x_max, y_max - accent_len), color, at)
 
     else:
-        # ✅ NEW — No fracture detected case
-        # Draw green border around entire image
-        cv2.rectangle(img, (10, 10), (width-10, height-10), (0, 200, 0), 4)
+        # Fallback for "Clear" scans (Full border overlay)
+        cv2.rectangle(img, (0, 0), (width, height), (83, 200, 0), 10)
+        cv2.putText(img, f"SYSTEM STATUS: NO ABNORMALITIES DETECTED ({confidence}%)", (20, 50), 
+                    cv2.FONT_HERSHEY_DUPLEX, 1.0, (83, 200, 0), 2, cv2.LINE_AA)
 
-        # Green checkmark banner at top
-        cv2.rectangle(img, (0, 0), (width, 60), (0, 200, 0), -1)
-        cv2.putText(
-            img,
-            f"NO FRACTURE DETECTED  ({confidence}% confidence)",
-            (20, 40),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.8,
-            (255, 255, 255), 2
-        )
+    # Professional Medical Watermark
+    overlay = img.copy()
+    cv2.rectangle(overlay, (0, height - 40), (width, height), (0,0,0), -1)
+    cv2.addWeighted(overlay, 0.4, img, 0.6, 0, img)
+    
+    cv2.putText(img, f"MEDVISION AI DIAGNOSTIC ENGINE | SCAN ID: {uuid.uuid4().hex[:8].upper()} | SEVERITY: {severity.upper()}", 
+                (20, height - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1, cv2.LINE_AA)
 
-        # Condition text at bottom
-        cv2.rectangle(img, (0, height-50), (width, height), (0,0,0), -1)
-        cv2.putText(
-            img,
-            f"Condition: {condition[:50]}",
-            (10, height-20),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.55,
-            (200, 200, 200), 1
-        )
-
-    # Watermark
-    cv2.putText(
-        img,
-        f"MedVision AI | {severity.upper()} | Confidence: {confidence}%",
-        (10, height - 15 if x_max > x_min else height - 60),
-        cv2.FONT_HERSHEY_SIMPLEX, 0.45,
-        (200, 200, 200), 1
-    )
-
-    # Save
+    # Save to media directory
     save_dir = os.path.join(settings.MEDIA_ROOT, 'annotated')
     os.makedirs(save_dir, exist_ok=True)
-    filename = f"annotated_{uuid.uuid4().hex}.jpg"
-    cv2.imwrite(os.path.join(save_dir, filename), img)
+    filename = f"yolo_annotated_{uuid.uuid4().hex}.jpg"
+    cv2.imwrite(os.path.join(save_dir, filename), img, [cv2.IMWRITE_JPEG_QUALITY, 95])
 
     return f"annotated/{filename}"
